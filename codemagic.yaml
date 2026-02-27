@@ -1,0 +1,33 @@
+workflows:
+  android-workflow:
+    name: RecovAI Android Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Extract ZIP
+        script: |
+          cd $CM_BUILD_DIR
+          unzip RecovAI-Flutter.zip -d extracted || true
+          if [ -d "extracted/RecovAI/flutter" ]; then
+            cp -r extracted/RecovAI/flutter/* .
+          elif [ -d "extracted/flutter" ]; then
+            cp -r extracted/flutter/* .
+          fi
+          ls -la
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Build APK
+        script: |
+          flutter build apk --release --no-tree-shake-icons
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+    publishing:
+      email:
+        recipients:
+          - khalilbba39@gmail.com
+        notify:
+          success: true
+          failure: true
